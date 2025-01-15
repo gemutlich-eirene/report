@@ -1,0 +1,42 @@
+library(forestplot)
+
+# 데이터 준비
+mean <- c(NA, 0.9, 0.82, 0.4, 0.92, 0.79, 0.78, 0.84, 0.93, 0.73)  # HR
+lower <- c(NA, 0.77, 0.71, 0.35, 0.81, 0.7, 0.69, 0.73, 0.75, 0.61)  # 신뢰구간 하한
+upper <- c(NA, 1.05, 0.95, 0.46, 1.04, 0.89, 0.88, 0.95, 1.06, 0.88)  # 신뢰구간 상한
+
+# 텍스트 레이블 (각 열의 길이를 맞춤)
+tabletext <- cbind(
+  c("Medication", "ACEi", "Statin", "Beta Blocker", "ARB", "CCB", "Nitrates", "Acetylsalicylic acid", "Warfarin", "Empagliflozin"),
+  c("Cohort Size", "4971", "2463", "1705", "6629", "1033", "2024", "23895", "253", "590"),
+  c("HR (95% CI)", "0.9 (0.77,1.05)", "0.82 (0.71,0.95)", "0.4 (0.35,0.46)", "0.92 (0.81,1.04)", 
+    "0.79 (0.70,0.89)", "0.78 (0.69,0.88)", "0.84 (0.73,0.95)", "0.93 (0.75,1.06)", "0.73 (0.61,0.88)")
+)
+
+# Forest Plot 생성
+forestplot(
+  labeltext = tabletext, 
+  mean = mean,                       # HR
+  lower = lower,                     # 신뢰구간 하한
+  upper = upper,                     # 신뢰구간 상한
+  zero = 1,                          # 기준선 (HR=1)
+  xlog = TRUE,                       # 로그 스케일 사용
+  clip = c(0.1, 2.0),                # 신뢰구간 제한
+  xticks = seq(0.5, 2, 0.5),         # x축 눈금
+  col = fpColors(
+    box = "black",
+    line = "black",
+    summary = "royalblue"
+  ),
+  title = "Medications for CHD",     # 제목 수정
+  txt_gp = fpTxtGp(
+    label = gpar(cex = 0.8),               # 텍스트 크기
+    ticks = gpar(cex = 0.7),               # x축 눈금 텍스트 크기
+    xlab = gpar(cex = 0.8, fontface = "bold"), # x축 레이블
+    title = gpar(cex = 1.2, fontface = "bold") # 제목 텍스트
+  ),
+  hrzl_lines = list(
+    "2" = gpar(lty = 1, col = "black")      # Study 제목 아래 가로선
+  ),
+  xlab = "Hazard Ratio"  # x축 레이블
+)
