@@ -1,0 +1,23 @@
+% 데이터 입력
+studies = {'Estruch et al', 'Shikany et al', 'Buckland et al', ...
+           'Gardener et al', 'Dilis et al', 'Tognon et al', ...
+           'Martinez-Gonzalez et al', 'Hoevenaar-Blom et al'};
+sample_size = [7447, 3562, 40040, 133, 23929, 161, 13609, 40011];
+mean_HR = [0.80, 0.78, 0.57, 0.65, 0.92, 0.89, 0.42, 0.70];
+lower_CI = [0.53, 0.62, 0.44, 0.38, 0.66, 0.80, 0.16, 0.54];
+upper_CI = [1.21, 0.98, 0.74, 1.12, 1.02, 1.00, 1.11, 0.92];
+
+% 분산 계산 (자연로그 사용)
+variance = ((log(upper_CI) - log(lower_CI)) / (2 * 1.96)).^2;
+
+% Weight 계산: 표본 크기를 반영한 역분산 가중치
+weights = 1 ./ (variance .* (1 ./ (sample_size - 1))); % 요소별 연산으로 수정
+
+% Weight의 비율 계산 (합이 100%)
+weight_percentage = (weights / sum(weights)) * 100;
+
+% 결과 테이블 출력
+result_table = table(studies', sample_size', mean_HR', lower_CI', upper_CI', weights', weight_percentage', ...
+    'VariableNames', {'Study', 'Sample_Size', 'HR', 'Lower_CI', 'Upper_CI', 'Weight', 'Weight_Percentage'});
+
+disp(result_table);
