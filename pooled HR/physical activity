@@ -1,0 +1,21 @@
+% 데이터 입력
+HR = [0.59, 0.79, 0.74, 0.70, 0.86, 0.88, 0.68]; % HR 값
+Weight = [0.59, 8.52, 3.73, 2.52, 50.47, 32.51, 1.66]; % 가중치
+
+% 계산
+ln_HR = log(HR); % HR의 자연로그
+weighted_ln_HR = ln_HR .* Weight; % ln(HR) * Weight
+sum_weighted_ln_HR = sum(weighted_ln_HR); % ln(HR) * Weight의 총합
+sum_weights = sum(Weight); % Weight의 총합
+ln_HR_pooled = sum_weighted_ln_HR / sum_weights; % 가중 로그 평균
+HR_pooled = exp(ln_HR_pooled); % HR_pooled
+SE = sqrt(1 / sum_weights); % 표준오차
+LL = exp(ln_HR_pooled - 1.96 * SE); % 95% 신뢰구간 하한
+UL = exp(ln_HR_pooled + 1.96 * SE); % 95% 신뢰구간 상한
+
+% 결과 출력
+disp('Pooled Hazard Ratio (HR_pooled):');
+disp(HR_pooled);
+
+disp('95% Confidence Interval (LL, UL):');
+disp([LL, UL]);
