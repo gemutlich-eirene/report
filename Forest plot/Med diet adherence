@@ -1,0 +1,53 @@
+library(forestplot)
+
+# 데이터 준비
+data <- data.frame(
+  study = c("NA", "Estruch et al", "Shikany et al", "Buckland et al", "Gardener et al", "Dilis et al", "Tognon et al", "Martinez-Gonzalez et al", "Hoevenaar-Blom et al", 
+"Summary"),
+  mean = c(NA, 0.70, 0.78, 0.57, 0.65, 0.92, 0.89, 0.42, 0.70, 0.71),  # HR
+  lower = c(NA, 0.55, 0.62, 0.44, 0.38, 0.66, 0.80, 0.16, 0.54, 0.58),  # 신뢰구간 하한
+  upper = c(NA, 0.89, 0.98, 0.74, 1.12, 1.02, 1.00, 1.11, 0.92, 0.86),  # 신뢰구간 상한
+  weights = c(NA, 6.82, 3.61, 31.42, 0.02, 26.78, 0.68, 0.77, 29.90, NA)  # Weight 값
+)
+
+# 텍스트 레이블 (각 열의 길이를 맞춤)
+tabletext <- cbind(
+  c("Study", "Estruch et al", "Shikany et al", "Buckland et al", "Gardener et al", "Dilis et al", "Tognon et al", "Martinez-Gonzalez et al", "Hoevenaar-Blom et al", "Summary"),
+  c("Sample Size", "7447", "3562", "40040", "133", "23929", "161", "13609", "40011", "NA"),
+  c("HR (95% CI)", "0.70 (0.55~0.89)", "0.78 (0.62, 0.98)", "0.57 (0.44, 0.74)", "0.65 (0.38, 1.12)", 
+    "0.92 (0.66, 1.02)", "0.89 (0.80, 1.00)", "0.42 (0.16, 1.11)", "0.70 (0.54, 0.92)", "0.71 (0.58,0.86)"),
+  c("Weight (%)", "6.82", "3.61", "31.42", "0.02", "26.78", "0.68", "0.77", "29.90", "100")
+)
+
+# 색상 설정
+colors <- fpColors(
+  box = "black",      # 개별 연구 박스 색상
+  lines = "black",     # 신뢰구간 선 색상
+  summary = "royalblue"  # Summary 다이아몬드 색상
+)
+
+# Forest Plot 생성
+forestplot(
+  labeltext = tabletext,       # 연구 이름
+  mean = data$mean,             # 효과크기
+  lower = data$lower,           # 신뢰구간 하한
+  upper = data$upper,           # 신뢰구간 상한
+  is.summary = c(rep(FALSE, 9), TRUE),  # Summary 행 설정
+  col = colors,                 # 색상 설정
+  zero = 1,                     # 기준선 (HR=1)
+  xlog = FALSE,                 # 로그 스케일 미사용
+  boxsize = c(0.2, 0.07, 0.04, 0.31, 0.01, 0.27, 0.07, 0.08, 0.3, 0.5),  # 박스 크기 설정
+  xticks = seq(0, 2, 0.5),      # x축 눈금
+  clip = c(0.1, 2),             # 신뢰구간 제한
+  title = "Hazard Ratio according to Med Diet Adherence",  # 제목
+  txt_gp = fpTxtGp(
+    label = gpar(cex = 0.8),               # 텍스트 크기
+    ticks = gpar(cex = 0.7),               # x축 눈금 텍스트 크기
+    xlab = gpar(cex = 0.8, fontface = "bold"), # x축 레이블
+    title = gpar(cex = 1.2, fontface = "bold") # 제목 텍스트
+  ),
+  hrzl_lines = list(
+    "2" = gpar(lty = 1, col = "black")      # Study 제목 아래 가로선
+  ),
+  xlab = "Hazard Ratio"  # x축 레이블
+)
