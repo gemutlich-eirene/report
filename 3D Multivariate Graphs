@@ -1,0 +1,43 @@
+# 데이터 입력
+HR_Mediterranean = [0.86, 0.64, 0.75, 0.77, 0.65, 0.69, 0.62, 0.79, 0.77, 0.84, 0.82, 0.68, 0.62, 0.66, 0.80];
+HR_Physical = [0.78, 0.77, 0.81, 1.01, 1.01, 0.96, 0.75, 0.73, 0.78, 0.97, 0.96, 0.78, 0.97, 0.71, 0.93];
+HR_Men_Smokers = [2.61, 2.49, 2.81, 2.26, 2.64, 1.99, 2.35, 2.02, 2.53, 2.59, 2.50, 2.81, 2.71, 2.45, 2.76];
+HR_Women_Smokers = [1.94, 2.32, 2.70, 2.51, 2.53, 2.07, 2.01, 2.62, 2.04, 2.50, 2.66, 2.67, 1.90, 2.05, 2.04];
+
+# 보간용 grid 생성
+# 메쉬 그리드 생성
+[X, Y] = meshgrid(linspace(min(HR_Mediterranean), max(HR_Mediterranean), 50), ...
+                  linspace(min(HR_Physical), max(HR_Physical), 50));
+Z_men = griddata(HR_Mediterranean, HR_Physical, HR_Men_Smokers, X, Y, 'cubic');
+Z_women = griddata(HR_Mediterranean, HR_Physical, HR_Women_Smokers, X, Y, 'cubic');
+
+# Spline 보간으로 Z값 계산
+Z_women_spline = griddata(HR_Mediterranean, HR_Physical, HR_Women_Smokers, X, Y, 'v4');
+Z_men_spline = griddata(HR_Mediterranean, HR_Physical, HR_Men_Smokers, X, Y, 'v4');
+
+# 기본 Turbo 컬러맵 가져오기
+original_turbo = turbo(256);
+low_saturation_turbo = original_turbo * 0.9;
+low_saturation_turbo = min(max(low_saturation_turbo, 0), 1);
+
+# Figure 1: 남성 흡연자의 HR Surface Plot
+figure;
+surf(X, Y, Z_men_spline, 'EdgeColor', 'none');
+xlabel('HR - Mediterranean Diet');
+ylabel('HR - Physical Activity');
+zlabel('HR - Male Smokers');
+colormap(low_saturation_turbo);
+colorbar;
+shading interp;
+grid on;
+
+# Figure 2: 여성 흡연자의 HR Surface Plot
+figure;
+surf(X, Y, Z_women_spline, 'EdgeColor', 'none');
+xlabel('HR - Mediterranean Diet');
+ylabel('HR - Physical Activity');
+zlabel('HR - Female Smokers');
+colormap(low_saturation_turbo);
+colorbar;
+shading interp;
+grid on;
