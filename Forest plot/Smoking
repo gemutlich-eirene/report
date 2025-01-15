@@ -1,0 +1,68 @@
+library(forestplot)
+
+data <- data.frame(
+  study = c("NA", "NA", "Schnohr et al", "Leening et al", "Zhang et al", "Prescott, Scharling et al", "Prescott, Hippe et al", "Summary (Women)", 
+"NA", "NA", "NA", "Schnohr et al", "Zhang et al", "Prescott, Scharling et al", "Prescott, Hippe et al", "Tverdal & Bjartveit", "Summary (Men)"),
+
+  mean = c(NA, NA, 2.02, 3.22, 3.86, 3.15, 2.82, 2.27, NA, NA, NA, 1.41, 2.71, 1.61, 2.09, 2.81, 2.31),  # HR
+  lower = c(NA, NA, 1.75, 2.18, 1.57, 2.33, 1.45, 1.86, NA, NA, NA, 1.24, 1.88, 1.21, 1.58, 2.48, 1.90),  # 신뢰구간 하한
+  upper = c(NA, NA, 2.33, 4.76, 9.50, 4.25, 5.46, 2.76, NA, NA, NA, 1.60, 3.89, 2.15, 2.77, 3.20, 2.81),  # 신뢰구간 상한
+  weights = c(NA, NA, 73.19, 2.90, 1.20, 16.67, 6.04, NA, NA, NA, NA, 20.84, 1.88, 4.13, 10.12, 63.03, NA)  # Weight 값
+)
+
+# 텍스트 레이블
+tabletext <- cbind(
+  c(
+    "Women", "Study", "Schnohr et al", "Leening et al", "Zhang et al", "Prescott, Scharling et al", "Prescott, Hippe et al", "Summary (Women)", NA, 
+    "Men", "Study", "Schnohr et al", "Zhang et al", "Prescott, Scharling et al", "Prescott, Hippe et al", "Tverdal & Bjartveit",
+    "Summary (Men)"  # Women, Men Summary 추가
+  ),
+  c(
+    "", "Sample Size", "6478", "1914", "4197", "6505", "11472", "NA", "", # Women 데이터 Sample Size
+    "", "Sample Size", "5599", "4099", "5644", "13191", "16932", "NA" # Men 데이터 Sample Size
+  ),
+  c(
+    "", "HR (95% CI)", "2.02 (1.75, 2.33)", "3.22 (2.18, 4.76)", "3.86 (1.57, 9.50)", "3.15 (2.33, 4.25)", "2.82 (1.45, 5.46)", "2.27 (1.86, 2.76)", NA, # Women 데이터 HR
+    "", "HR (95% CI)", "1.41 (1.24, 1.60)", "2.71 (1.88, 3.89)", "1.61 (1.21, 2.15)", "2.09 (1.58, 2.77)", "2.81 (2.48, 3.20)", "2.31 (1.90, 2.81)" # Men 데이터 HR
+  ),
+  c(
+    "", "Weight (%)", "73.19", "2.90", "1.20", "16.67", "6.04", "100", NA, # Women 데이터 Weight
+    "", "Weight (%)", "20.84", "1.88", "4.13", "10.12", "63.03", "100" # Men 데이터 Weight
+  )
+)
+
+# 색상 설정
+colors <- fpColors(
+  box = "black",      # 개별 연구 박스 색상
+  lines = "black",     # 신뢰구간 선 색상
+  summary = "royalblue"  # Summary 다이아몬드 색상
+)
+
+# Forest Plot 생성
+forestplot(
+  labeltext = tabletext,       # 연구 이름
+  mean = data$mean,             # 효과크기
+  lower = data$lower,           # 신뢰구간 하한
+  upper = data$upper,           # 신뢰구간 상한
+  is.summary = c(rep(FALSE, 7), TRUE, rep(FALSE, 8), TRUE),  # Summary (Women) 및 Summary (Men) 행 설정
+  col = colors,                 # 색상 설정
+  zero = 1,                     # 기준선 (HR=1)
+  xlog = FALSE,                 # 로그 스케일 미사용
+  boxsize = c(0.2, 0.2, 0.73, 0.03, 0.01, 0.17, 0.06, 0.8, 0.2, 0.2, 0.2, 0.21, 0.02, 0.04, 0.4, 0.63, 0.8),  # 박스 크기 설정
+  clip = c(0.5, 10.0),               # Hazard Ratio 범위 설정
+  xticks = c(0.5, 1, 2, 5, 10),      # x축 눈금
+  title = "Hazard Ratios for smoking cigarettes",  # 제목
+  txt_gp = fpTxtGp(
+    label = gpar(cex = 0.8),               # 텍스트 크기
+    ticks = gpar(cex = 0.7),               # x축 눈금 텍스트 크기
+    xlab = gpar(cex = 0.8, fontface = "bold"), # x축 레이블
+    title = gpar(cex = 1.2, fontface = "bold") # 제목 텍스트
+  ),
+  hrzl_lines = list(
+    "2" = gpar(lty = 1, col = "black"),    # Women 제목 아래 가로선
+    "3" = gpar(lty = 1, col = "gray"),    # Women 열 제목 아래 가로선
+    "11" = gpar(lty = 1, col = "black"),    # Men 제목 아래 가로선
+    "12" = gpar(lty = 1, col = "gray")    # Men 열 제목 아래 가로선
+  ),
+  xlab = "Hazard Ratio"                                # 플롯 아래 텍스트 추가
+)
